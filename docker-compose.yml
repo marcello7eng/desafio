@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # 1. Serviço de Banco de Dados (MySQL 8)
+  mysql:
+    image: mysql:8.0
+    container_name: desafio-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root # Senha do superusuário root
+      MYSQL_DATABASE: desafio_db_mysql # O banco de dados que será criado
+      MYSQL_USER: desafio_user # O usuário que o Quarkus vai usar
+      MYSQL_PASSWORD: desafio_pass # A senha que o Quarkus vai usar
+    ports:
+      - "3306:3306" # Porta padrão do MySQL
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - desafio-net
+
+  # 2. Serviço de Segurança (Keycloak)
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: desafio-keycloak
+    command: start-dev
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      # Linka o Keycloak com o MySQL (Opcional, mas boa prática)
+      - KC_DB=mysql
+      - KC_DB_URL_HOST=mysql
+      - KC_DB_URL_DATABASE=desafio_db_mysql
+      - KC_DB_USERNAME=desafio_user
+      - KC_DB_PASSWORD=desafio_pass
+    ports:
+      - "8080:8080"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    networks:
+      - desafio-net
+    depends_on:
+      - mysql
+
+  # 3. (BÔNUS) Visualizador de Banco de Dados
+  adminer:
+    image: adminer
+    container_name: desafio-adminer
+    ports:
+      - "8088:8080" # Acesse em http://localhost:8088
+    networks:
+      - desafio-net
+    depends_on:
+      - mysql
+
+# Declaração dos "discos virtuais" (volumes) persistentes
+volumes:
+  mysql_data:
+  keycloak_data:
+
+# Declaração da rede
+networks:
+  desafio-net:
+    driver: bridge
