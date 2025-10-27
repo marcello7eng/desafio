@@ -1,90 +1,157 @@
 # 📚 Sistema de Gestão Acadêmica
 
-Este projeto implementa um **Sistema de Gestão Acadêmica** , seguindo uma arquitetura moderna com microserviços orquestrados via Docker Compose.
+Este projeto implementa um **Sistema de Gestão Acadêmica Web**, seguindo uma arquitetura moderna baseada em **microserviços orquestrados via Docker Compose**.
+
 ---
 
 ## 🏗️ Arquitetura do Projeto (Fullstack Monorepo)
 
-O projeto é dividido em três componentes principais, todos isolados em suas respectivas pastas:
+O projeto é composto por três componentes principais:
 
-* **Backend** (`desafio-backend`): **Quarkus (Java)**. API RESTful segura, construída para alto desempenho e baixo consumo de memória.
-* **Frontend** (`desafio-frontend`): **Angular 20+ (Standalone)**. Aplicação Web Single Page Application (SPA).
-* **Infraestrutura**: **Docker Compose**. Gerenciamento de identidade (**Keycloak**) e banco de dados (**MySQL**).
+| Componente | Descrição |
+|-------------|------------|
+| **Backend** (`desafio-backend`) | API RESTful segura desenvolvida em **Quarkus (Java)**, projetada para alto desempenho e baixo consumo de memória. |
+| **Frontend** (`desafio-frontend`) | Aplicação **Angular 20+ (Standalone)** do tipo SPA (Single Page Application). |
+| **Infraestrutura** | Gerenciamento de serviços via **Docker Compose**, incluindo o **Keycloak** (autenticação) e **MySQL** (banco de dados). |
 
 ---
 
-## 🚀 Setup Rápido: Como Iniciar o Projeto
+## 🚀 Setup Rápido — Como Iniciar o Projeto
 
-Este projeto foi desenhado para ser iniciado com **apenas um comando** (e alguns passos de configuração), automatizando a infraestrutura e o backend.
+Este projeto foi desenhado para ser iniciado com **apenas um comando**, automatizando toda a infraestrutura.
 
-### Pré-requisitos 🛠️
+---
 
-Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
+### 🧩 Pré-requisitos
 
-* **Docker & Docker Compose:** Essenciais para rodar o MySQL e o Keycloak.
-* **Java JDK 17+:** Necessário para o framework Quarkus.
-* **Maven (`mvn`):** Ferramenta de build do projeto Java.
-* **Node.js 20+ & Angular CLI:** Para rodar o projeto Frontend.
+Certifique-se de ter as seguintes ferramentas instaladas:
 
-### Passos de Execução (Ordem Recomendada)
+- 🐋 **Docker & Docker Compose** — Essenciais para rodar o MySQL e o Keycloak.
+- ☕ **Java JDK 17+** — Necessário para executar o Quarkus.
+- 🧱 **Maven (`mvn`)** — Ferramenta de build para o backend.
+- 🟩 **Node.js 20+ & Angular CLI** — Para rodar o frontend.
 
-Siga os passos na ordem para garantir a correta inicialização dos serviços:
+---
 
-#### 1. Subir a Infraestrutura (Keycloak e MySQL)
+## ⚙️ Passos de Execução (Ordem Recomendada)
 
-Na **pasta raiz do projeto** (`/desafio`), execute o Docker Compose. Isso iniciará o **MySQL** (porta `3306`) e o **Keycloak** (porta `8080`).
+Siga as etapas abaixo na **ordem indicada** para evitar conflitos entre serviços.
 
-Configuração do Keycloak 
-obs:📁 Estrutura esperada de pastas deve ser assim:
+---
+
+### **1️⃣ Subir a Infraestrutura (Keycloak e MySQL)**
+
+Certifique-se de que sua estrutura de pastas esteja assim:
+
 /desafio
+
 ├─ docker-compose.yml
+
 ├─ desafio-backend/
+
 ├─ desafio-frontend/
+
 └─ keycloak/
+
    └─ realm-desafio-app.json
 
-No terminal terminal bash na pasta desafio:
-docker-compose up -d
 
-===============================================Atenção===============================================================
-O docker-compose.yml foi configurado para pegar as informações realm-desafio-app.json e assim já criar o nosso realm 
-e as demais configurações dele.
+O arquivo `realm-desafio-app.json` já contém todas as configurações do **Realm**, **Roles**, **Clientes** e **Usuários de teste** do Keycloak.
 
-2. Iniciar o Backend (Quarkus)
-O Backend será iniciado e fará a conexão automática com o MySQL e o Keycloak.
+> ⚠️ **Atenção:** O `docker-compose.yml` foi configurado para importar automaticamente esse arquivo e criar o realm completo na primeira execução.
 
+No terminal (dentro da pasta `desafio`):
 
-# Navegue para a pasta do backend
-cd desafio-backend
+```bash
+docker compose up -d
 
-# Inicie o Quarkus no modo desenvolvimento
+======================
+Isso iniciará:
 
- terminal bash:
-./mvnw quarkus:dev
-⚠️ Aguarde o log mostrar Listening on: http://localhost:8081. O backend está rodando na porta 8081.
+🗄️ MySQL → Porta 3306
 
-Configurar o Keycloak (Primeira Vez)
-O Keycloak está rodando, mas você precisa configurar o Realm de segurança apenas na primeira execução.
+🔑 Keycloak → Porta 8080
 
-Abra o navegador em: http://localhost:8080
+🧭 Adminer (visualizador do banco) → Porta 8088
 
-Faça login no Realm Master (Usuário: admin, Senha: admin).
+=======================
+Após alguns segundos, verifique se tudo subiu corretamente:
+docker ps
 
-iniciar o Frontend (Angular)
+=======================
 
+2️⃣ Iniciar o Backend (Quarkus)
 
-# Navegue para a pasta do frontend
-terminal bash:
+ATENÇÃO!!!!!!  ESSE PROJETO BACKEND FOI FEITO E ORGANIZADO NO VISUAL STUDIO,
+OU SEJA SE VC FOR USAR NO ECLIPSE POR EXEMPLO DEVE CRIAR UMA CLASSE DE INICIALIZAÇÃO COMO SE FAZ NO SPRING
+
+O backend faz a conexão automática com o MySQL e Keycloak.
+
+Navegue até a pasta do backend: cd desafio-backend
+
+Inicie o Quarkus em modo de desenvolvimento: ./mvnw quarkus:dev
+
+Aguarde até o log exibir: Listening on: http://localhost:8081
+
+✅ O backend estará disponível na porta 8081.
+
+3️⃣ Configurar o Keycloak
+
+http://localhost:8080
+
+Usuário: admin
+Senha : admin
+
+( Caso não funcione acesse : http://localhost:8080/admin/master/console )
+
+Após logar você verá o Realm desafio-app importado automaticamente.
+
+Se quiser confirmar:
+
+Clique no seletor de realms (canto superior esquerdo).
+
+Selecione desafio-app.
+
+Verifique:
+
+Roles: admin, coordenador, professor, aluno
+
+Clients: desafio-frontend
+
+Usuários: admin-teste, professor-teste, aluno-teste etc.
+
+4️⃣ Iniciar o Frontend (Angular)
+Navegue até a pasta do frontend:
+
 cd desafio-frontend
 
-# 1. Instale as dependências
+Instale as dependências do Node:
+
 npm install
 
-# 2. Inicie o servidor de desenvolvimento
+Inicie o servidor de desenvolvimento:
+
 ng serve --port 4200
-🎉 Aguarde o log mostrar Application bundle generation complete. O sistema estará acessível em http://localhost:4200.
+
+
+🎉 O sistema estará acessível em:
+👉 http://localhost:4200
 
 ✅ Uso da Aplicação e Segurança
-O sistema está acessível em http://localhost:4200. Ao tentar acessar, você será redirecionado automaticamente para a tela de Login do Keycloak.
 
-Edite e ligue (ON) a opção: Add to access token.
+Ao acessar o sistema, o usuário será redirecionado automaticamente para o Keycloak (login).
+Após autenticar, o token JWT retornará com os roles definidos no Realm (admin, coordenador, professor, aluno).
+
+🔄 Logs e Diagnóstico
+
+Para acompanhar os logs de todos os serviços:
+
+docker compose logs -f
+
+
+Ou apenas do Keycloak:
+
+docker compose logs -f keycloak
+
+🧑‍💻 Autor: Marcello Felipe
+📦 Tecnologias: Quarkus • Angular • Keycloak • MySQL • Docker
