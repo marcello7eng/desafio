@@ -1,0 +1,45 @@
+@use '@angular/material' as mat;
+
+// Paleta turquesa personalizada
+$turquesa-primary: mat.define-palette(mat.$teal-palette, 500, 300, 700);
+$turquesa-accent: mat.define-palette(mat.$cyan-palette, A200, A100, A400);
+$turquesa-warn: mat.define-palette(mat.$red-palette);
+
+// Tema claro (pode criar o dark depois)
+$custom-theme: mat.define-light-theme((
+  color: (
+    primary: $turquesa-primary,
+    accent: $turquesa-accent,
+    warn: $turquesa-warn,
+  )
+));
+
+// Aplica o tema globalmente
+@include mat.all-component-themes($custom-theme);
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f5f7f9;
+}
+
+/* Cores de fallback e ajustes finos */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  color: var(--text);
+  background-color: var(--bg);
+  transition: background 0.3s, color 0.3s;
+}
+
+mat-toolbar.mat-primary {
+  background: linear-gradient(90deg, #009688, #00bfa5);
+}
+
+mat-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
