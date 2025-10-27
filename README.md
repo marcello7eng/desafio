@@ -1,9 +1,6 @@
 # 📚 Sistema de Gestão Acadêmica
 
-Este projeto implementa um **Sistema de Gestão Acadêmica** completo, seguindo uma arquitetura moderna com microserviços orquestrados via Docker Compose.
-
-Desenvolvido para ser um sistema robusto e seguro, com foco em uma experiência de desenvolvimento simplificada.
-
+Este projeto implementa um **Sistema de Gestão Acadêmica** , seguindo uma arquitetura moderna com microserviços orquestrados via Docker Compose.
 ---
 
 ## 🏗️ Arquitetura do Projeto (Fullstack Monorepo)
@@ -37,8 +34,21 @@ Siga os passos na ordem para garantir a correta inicialização dos serviços:
 
 Na **pasta raiz do projeto** (`/desafio`), execute o Docker Compose. Isso iniciará o **MySQL** (porta `3306`) e o **Keycloak** (porta `8080`).
 
-```bash
+Configuração do Keycloak 
+obs:📁 Estrutura esperada de pastas deve ser assim:
+/desafio
+├─ docker-compose.yml
+├─ desafio-backend/
+├─ desafio-frontend/
+└─ keycloak/
+   └─ realm-desafio-app.json
+
+No terminal terminal bash na pasta desafio:
 docker-compose up -d
+
+===============================================Atenção===============================================================
+O docker-compose.yml foi configurado para pegar as informações realm-desafio-app.json e assim já criar o nosso realm 
+e as demais configurações dele.
 
 2. Iniciar o Backend (Quarkus)
 O Backend será iniciado e fará a conexão automática com o MySQL e o Keycloak.
@@ -48,6 +58,8 @@ O Backend será iniciado e fará a conexão automática com o MySQL e o Keycloak
 cd desafio-backend
 
 # Inicie o Quarkus no modo desenvolvimento
+
+ terminal bash:
 ./mvnw quarkus:dev
 ⚠️ Aguarde o log mostrar Listening on: http://localhost:8081. O backend está rodando na porta 8081.
 
@@ -58,13 +70,12 @@ Abra o navegador em: http://localhost:8080
 
 Faça login no Realm Master (Usuário: admin, Senha: admin).
 
-Siga o guia detalhado na seção 🔑 Configuração do Keycloak abaixo para criar o Realm, Roles, Cliente e Usuários de Teste.
-
 iniciar o Frontend (Angular)
 
 
 # Navegue para a pasta do frontend
-cd ../desafio-frontend
+terminal bash:
+cd desafio-frontend
 
 # 1. Instale as dependências
 npm install
@@ -75,43 +86,5 @@ ng serve --port 4200
 
 ✅ Uso da Aplicação e Segurança
 O sistema está acessível em http://localhost:4200. Ao tentar acessar, você será redirecionado automaticamente para a tela de Login do Keycloak.
-
-
-Configuração do Keycloak (Passo 3 Detalhado)
-Se esta for a primeira inicialização, siga estes passos dentro do Keycloak (logado como admin):
-
-1. Criar o Realm
-Clique em Add Realm e crie um novo chamado desafio-app.
-
-2. Criar Roles (Funções)
-No Realm desafio-app, navegue para Realm Roles e crie as seguintes funções:
-
-admin
-
-coordenador
-
-professor
-
-aluno
-
-3. Criar o Cliente Frontend
-Navegue para Clients e clique em Create com as seguintes configurações:
-
-Client ID: desafio-frontend
-
-Root URL: http://localhost:4200
-
-Valid Redirect URIs: http://localhost:4200/*
-
-Web Origins: http://localhost:4200
-
-Configuração Adicional: Na aba Settings, ligue a opção Direct Access Grants.
-
-4. Mapear Roles no JWT (Crucial!)
-Este passo garante que as funções (Roles) do usuário sejam incluídas no token JWT, permitindo que o Backend as leia.
-
-Navegue para Client Scopes (menu principal) -> roles (clique no escopo).
-
-Aba Mappers -> Encontre o mapeador realm roles.
 
 Edite e ligue (ON) a opção: Add to access token.
