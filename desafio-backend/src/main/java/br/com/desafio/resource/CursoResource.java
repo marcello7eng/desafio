@@ -11,21 +11,19 @@ import jakarta.ws.rs.core.Response;
 import java.util.UUID;
 
 @Path("/api/cursos")
-@Produces(MediaType.APPLICATION_JSON) // Saída em JSON
-@Consumes(MediaType.APPLICATION_JSON) // Entrada em JSON
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class CursoResource {
-
 
     @Inject
     CursoService service;
 
-  
+    // Todos (admin, coordenador, professor e aluno) podem visualizar cursos
     @GET
     @RolesAllowed({"admin", "coordenador", "professor", "aluno"})
     public Response listarTodos() {
         return Response.ok(service.listarTodos()).build();
     }
-
 
     @GET
     @Path("/{id}")
@@ -34,6 +32,7 @@ public class CursoResource {
         return Response.ok(service.buscarPorId(id)).build();
     }
 
+    // Coordenador e admin podem criar, atualizar e deletar
     @POST
     @RolesAllowed({"admin", "coordenador"})
     public Response criar(Curso curso) {
@@ -53,40 +52,32 @@ public class CursoResource {
     @RolesAllowed({"admin", "coordenador"})
     public Response deletar(@PathParam("id") UUID id) {
         service.deletar(id);
-        return Response.noContent().build(); // Retorna 204
+        return Response.noContent().build();
     }
 
+    // ---- Regras para disciplinas ----
+
     @POST
-@Path("/{cursoId}/disciplinas") 
-@RolesAllowed({"admin", "coordenador"})
-public Response adicionarDisciplina(
-        @PathParam("cursoId") UUID cursoId, 
-        Disciplina disciplina) { // Pega a disciplina do JSON
+    @Path("/{cursoId}/disciplinas")
+    @RolesAllowed({"admin", "coordenador"})
+    public Response adicionarDisciplina(@PathParam("cursoId") UUID cursoId, Disciplina disciplina) {
+        Disciplina novaDisciplina = service.adicionarDisciplina(cursoId, disciplina);
+        return Response.status(Response.Status.CREATED).entity(novaDisciplina).build();
+    }
 
-    Disciplina novaDisciplina = service.adicionarDisciplina(cursoId, disciplina);
-    return Response.status(Response.Status.CREATED).entity(novaDisciplina).build();
-}
+    @PUT
+    @Path("/{cursoId}/disciplinas/{disciplinaId}")
+    @RolesAllowed({"admin", "coordenador"})
+    public Response atualizarDisciplina(@PathParam("cursoId") UUID cursoId, @PathParam("disciplinaId") UUID disciplinaId, Disciplina disciplina) {
+        Disciplina atualizada = service.atualizarDisciplina(cursoId, disciplinaId, disciplina);
+        return Response.ok(atualizada).build();
+    }
 
-@DELETE
-@Path("/{cursoId}/disciplinas/{disciplinaId}")
-@RolesAllowed({"admin", "coordenador"})
-public Response deletarDisciplina(
-        @PathParam("cursoId") UUID cursoId, 
-        @PathParam("disciplinaId") UUID disciplinaId) {
-
-    service.deletarDisciplina(cursoId, disciplinaId);
-    return Response.noContent().build();
-}
-
-@PUT
-@Path("/{cursoId}/disciplinas/{disciplinaId}")
-@RolesAllowed({"admin", "coordenador"})
-public Response atualizarDisciplina(
-        @PathParam("cursoId") UUID cursoId, 
-        @PathParam("disciplinaId") UUID disciplinaId,
-        Disciplina disciplina) { // Pega o JSON com as atualizações
-
-    Disciplina disciplinaAtualizada = service.atualizarDisciplina(cursoId, disciplinaId, disciplina);
-    return Response.ok(disciplinaAtualizada).build();
-}
+    @DELETE
+    @Path("/{cursoId}/disciplinas/{disciplinaId}")
+    @RolesAllowed({"admin", "coordenador"})
+    public Response deletarDisciplina(@PathParam("cursoId") UUID cursoId, @PathParam("disciplinaId") UUID disciplinaId) {
+        service.deletarDisciplina(cursoId, disciplinaId);
+        return Response.noContent().build();
+    }
 }

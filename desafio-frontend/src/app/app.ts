@@ -26,47 +26,60 @@ import { ROLES } from './core/auth/roles.util';
     <mat-sidenav-container class="layout">
       <mat-sidenav #drawer mode="side" [opened]="true" class="sidenav">
         <h3 class="logo">🎓 Desafio</h3>
+
         <mat-nav-list>
+          <!-- DASHBOARD -->
           <a mat-list-item routerLink="/" routerLinkActive="active">
             <mat-icon>dashboard</mat-icon><span>Dashboard</span>
           </a>
-          <a mat-list-item *ngIf="kc.hasRole(roles.ADMIN)" routerLink="/usuarios">
+
+          <!-- USUÁRIOS (somente ADMIN) -->
+          <a *ngIf="kc.hasRole(roles.ADMIN)"
+             mat-list-item
+             routerLink="/usuarios"
+             routerLinkActive="active">
             <mat-icon>group</mat-icon><span>Usuários</span>
           </a>
-         <a
-          mat-list-item
-          *ngIf="kc.hasAnyRole([roles.PROF, roles.ALUNO, roles.COORD, roles.ADMIN])"
-          routerLink="/matriz"
-          routerLinkActive="active"
-        >
-          <mat-icon>grid_view</mat-icon><span>Matriz Curricular</span>
-        </a>
+
+          <!-- CURSOS (ADMIN e COORDENADOR) -->
+          <a *ngIf="kc.hasAnyRole([roles.ADMIN, roles.COORD])"
+             mat-list-item
+             routerLink="/cursos"
+             routerLinkActive="active">
+            <mat-icon>library_books</mat-icon><span>Cursos</span>
+          </a>
+
+          <!-- MATRIZ CURRICULAR (todos os papéis) -->
+          <a *ngIf="kc.hasAnyRole([roles.PROF, roles.ALUNO, roles.COORD, roles.ADMIN])"
+             mat-list-item
+             routerLink="/matriz"
+             routerLinkActive="active">
+            <mat-icon>grid_view</mat-icon><span>Matriz Curricular</span>
+          </a>
+
+          <!-- PROFESSORES (ADMIN e COORDENADOR) -->
+          <a *ngIf="kc.hasAnyRole([roles.ADMIN, roles.COORD])"
+             mat-list-item
+             routerLink="/professores"
+             routerLinkActive="active">
+            <mat-icon>person</mat-icon><span>Professores</span>
+          </a>
+
+          <!-- ALUNOS (ADMIN e COORDENADOR) -->
+          <a *ngIf="kc.hasAnyRole([roles.ADMIN, roles.COORD])"
+             mat-list-item
+             routerLink="/alunos"
+             routerLinkActive="active">
+            <mat-icon>school</mat-icon><span>Alunos</span>
+          </a>
         </mat-nav-list>
 
+        <!-- BOTÃO SAIR -->
         <div class="bottom-menu">
           <button mat-button color="warn" (click)="kc.logout()">
             <mat-icon>logout</mat-icon> Sair
           </button>
         </div>
-
-              <a
-        mat-list-item
-        *ngIf="kc.hasAnyRole([roles.ADMIN, roles.COORD])"
-        routerLink="/professores"
-        routerLinkActive="active"
-      >
-        <mat-icon>person</mat-icon><span>Professores</span>
-      </a>
-
-      <a
-        mat-list-item
-        *ngIf="kc.hasAnyRole([roles.ADMIN, roles.COORD])"
-        routerLink="/alunos"
-        routerLinkActive="active"
-      >
-        <mat-icon>school</mat-icon><span>Alunos</span>
-      </a>
-
       </mat-sidenav>
 
       <mat-sidenav-content>

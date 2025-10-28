@@ -13,8 +13,14 @@ import { KeycloakService } from '../../core/auth/keycloak.service';
   template: `
     <h2>Cursos</h2>
 
+    <!-- Informação de depuração -->
+    <p style="color: gray; font-size: 13px;">
+      Usuário: {{ kc.username }} <br>
+      Roles: {{ kc['kc']?.tokenParsed?.realm_access?.roles }}
+    </p>
+
     <!-- Exibe o botão Novo Curso somente para admin e coordenador -->
-    <a *ngIf="kc.hasAnyRole(['admin','coordenador'])"
+    <a *ngIf="isCoordenadorOuAdmin"
        mat-raised-button color="primary"
        routerLink="/cursos/novo">
       Novo Curso
@@ -75,17 +81,31 @@ import { KeycloakService } from '../../core/auth/keycloak.service';
 export class CursosListComponent implements OnInit {
   private api = inject(CursoService);
   private router = inject(Router);
-  kc = inject(KeycloakService); // ✅ aqui está a injeção correta
+  kc = inject(KeycloakService);
 
   cursos: Curso[] = [];
   cols = ['nome', 'codigo', 'acoes'];
+  isCoordenadorOuAdmin = false; // controle local de exibição
 
   ngOnInit() {
+    console.log('Token decodificado:', (this.kc as any)['kc']?.tokenParsed);
+
+    // aguarda o carregamento completo do Keycloak antes de verificar roles
+    setTimeout(() => {
+      const roles = (this.kc as any)['kc']?.tokenParsed?.realm_access?.roles || [];
+      console.log('Roles detectadas:', roles);
+      this.isCoordenadorOuAdmin = this.kc.hasAnyRole(['admin', 'coordenador']);
+      console.log('É coordenador/admin?', this.isCoordenadorOuAdmin);
+    }, 500);
+
     this.carregar();
   }
 
   carregar() {
-    this.api.list().subscribe(data => (this.cursos = data));
+    this.api.list().subscribe({
+      next: (data) => (this.cursos = data),
+      error: (err) => console.error('Erro ao carregar cursos', err),
+    });
   }
 
   remover(id: string) {

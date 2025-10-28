@@ -33,11 +33,20 @@ public class UsuarioService {
 
 
     @Transactional
-    public Usuario criar(Usuario usuario) {
-       
+public Usuario criar(Usuario usuario) {
+    try {
         usuario.persist();
         return usuario;
+    } catch (Exception e) {
+        // Captura erros de banco que ocorrem ao persistir duplicados
+        String msg = e.getMessage();
+        if (msg != null && msg.contains("Duplicate entry")) {
+            throw new RuntimeException("CPF, e-mail ou matrícula já cadastrado!");
+        }
+        throw e;
     }
+}
+
 
     @Transactional
     public Usuario atualizar(UUID id, Usuario usuarioAtualizado) {

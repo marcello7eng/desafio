@@ -17,7 +17,6 @@ public class UsuarioResource {
     @Inject
     UsuarioService service;
 
-   //Apenas o admin pode ver ou manipular usuários
     @GET
     @RolesAllowed("admin")
     public Response listarTodos(@QueryParam("papel") String papel) {

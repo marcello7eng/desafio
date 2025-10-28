@@ -1,0 +1,45 @@
+# ============================================================
+# 🧩 GITIGNORE — Projeto Desafio (Frontend Angular + Backend Quarkus)
+# ============================================================
+
+# === Node / Angular ===
+desafio-frontend/node_modules/
+desafio-frontend/.angular/
+desafio-frontend/.vscode/
+desafio-frontend/dist/
+desafio-frontend/.cache/
+desafio-frontend/.tmp/
+desafio-frontend/npm-debug.log*
+desafio-frontend/yarn-error.log*
+
+# === Quarkus / Java ===
+desafio-backend/target/
+desafio-backend/.idea/
+desafio-backend/.vscode/
+desafio-backend/.DS_Store
+desafio-backend/*.log
+desafio-backend/.project
+desafio-backend/.classpath
+desafio-backend/.settings/
+desafio-backend/hsqldb/
+desafio-backend/.cache/
+
+# === Docker / Build ===
+*.pid
+*.seed
+*.pid.lock
+*.swp
+docker-compose.override.yml
+.env
+.env.local
+.env.*.local
+
+# === Sistema operacional ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Outros ===
+**/node_modules/
+**/.angular/
+**/.vscode/

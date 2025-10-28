@@ -51,17 +51,30 @@ export class AlunosFormComponent implements OnInit {
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
     if (this.id) {
-      this.service.find(this.id).subscribe((data) => this.usuario = data);
+      this.service.find(this.id).subscribe({
+        next: (data) => this.usuario = data,
+        error: (err) => console.error('Erro ao carregar aluno:', err)
+      });
     }
   }
 
   salvar() {
-    if (this.id) {
-      this.service.update(this.id, this.usuario).subscribe(() => this.voltar());
-    } else {
-      this.service.create(this.usuario).subscribe(() => this.voltar());
-    }
+  this.usuario.cpf = this.usuario.cpf?.replace(/\D/g, ''); // remove pontos e traços
+  console.log('Salvando usuário:', this.usuario);
+
+  if (this.id) {
+    this.service.update(this.id, this.usuario).subscribe({
+      next: () => this.voltar(),
+      error: (err) => console.error('Erro ao atualizar professor:', err),
+    });
+  } else {
+    this.service.create(this.usuario).subscribe({
+      next: () => this.voltar(),
+      error: (err) => console.error('Erro ao criar professor:', err),
+    });
   }
+}
+
 
   voltar() {
     this.router.navigate(['/alunos']);
