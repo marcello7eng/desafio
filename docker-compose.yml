@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # 1. Serviço de Banco de Dados (MySQL 8)
@@ -6,26 +6,26 @@ services:
     image: mysql:8.0
     container_name: desafio-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root # Senha do superusuário root
-      MYSQL_DATABASE: desafio_db_mysql # O banco de dados que será criado
-      MYSQL_USER: desafio_user # O usuário que o Quarkus vai usar
-      MYSQL_PASSWORD: desafio_pass # A senha que o Quarkus vai usar
+      MYSQL_ROOT_PASSWORD: root           # Senha do superusuário root
+      MYSQL_DATABASE: desafio_db_mysql    # Banco de dados inicial
+      MYSQL_USER: desafio_user            # Usuário usado pelo Quarkus e pelo Keycloak
+      MYSQL_PASSWORD: desafio_pass        # Senha do usuário
     ports:
-      - "3306:3306" # Porta padrão do MySQL
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - desafio-net
 
-  # 2. Serviço de Segurança (Keycloak)
+  # 2. Serviço de Autenticação (Keycloak)
   keycloak:
-    image: quay.io/keycloak/keycloak:latest
+    image: quay.io/keycloak/keycloak:latest # use uma versão estável específica
     container_name: desafio-keycloak
-    command: start-dev
+    command: ["start-dev", "--import-realm"]  
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
-      # Linka o Keycloak com o MySQL (Opcional, mas boa prática)
+      # Configuração do banco
       - KC_DB=mysql
       - KC_DB_URL_HOST=mysql
       - KC_DB_URL_DATABASE=desafio_db_mysql
@@ -34,29 +34,29 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - keycloak_data:/opt/keycloak/data
+      # O arquivo JSON será importado automaticamente na primeira execução
+      - ./keycloak/realm-desafio-app.json:/opt/keycloak/data/import/realm-desafio-app.json
     networks:
       - desafio-net
     depends_on:
       - mysql
 
-  # 3. (BÔNUS) Visualizador de Banco de Dados
+  #  3. Visualizador de Banco (Adminer)
   adminer:
     image: adminer
     container_name: desafio-adminer
     ports:
-      - "8088:8080" # Acesse em http://localhost:8088
+      - "8088:8080"   # Acesse em http://localhost:8088
     networks:
       - desafio-net
     depends_on:
       - mysql
 
-# Declaração dos "discos virtuais" (volumes) persistentes
+#Volumes persistentes
 volumes:
   mysql_data:
-  keycloak_data:
 
-# Declaração da rede
+# Rede interna
 networks:
   desafio-net:
     driver: bridge
